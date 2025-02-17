@@ -13,9 +13,9 @@ const NavBar = () => {
             <div className="flex items-center">
               <Link
                 href={"/"}
-                className="text-2xl font-light tracking-tight text-blue-900"
+                className="flex-shrink-0 transition-transform hover:scale-105"
               >
-                HireAgent
+                <img src="/logo.png" alt="logo" className="w-auto h-12" />
               </Link>
               <div className="hidden md:block ml-12">
                 <div className="flex space-x-8">

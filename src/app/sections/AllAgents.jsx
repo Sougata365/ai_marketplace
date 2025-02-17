@@ -1,26 +1,32 @@
-"use client";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Eye } from "lucide-react";
 import Link from "next/link";
 import { baseURL } from "../urls";
-import { useSearchParams } from "next/navigation";
 
 const AICatalog = () => {
-  const searchParams = useSearchParams();
-  const searchQuery = searchParams.get("search");
   const [assistants, setAssistants] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(
+    "Real Estate Industry"
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAssistants = async () => {
       try {
         const response = await axios.get(
-          searchQuery
-            ? `${baseURL}/api/assistants/getAssistantDetails?search=${searchQuery}`
-            : `${baseURL}/api/assistants/getAssistantDetails`
+          `${baseURL}/api/assistants/getAssistantDetails`,
+          { params: selectedCategory ? { category: selectedCategory } : {} }
         );
-        setAssistants(response.data);
+
+        const sortedAssistants = response.data.sort((a, b) => {
+          if (a.category === "Real Estate Industry") return -1;
+          if (b.category === "Real Estate Industry") return 1;
+          return 0;
+        });
+
+        setAssistants(sortedAssistants);
       } catch (error) {
         console.error("Error fetching assistants:", error);
       } finally {
@@ -28,14 +34,31 @@ const AICatalog = () => {
       }
     };
 
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(
+          `${baseURL}/api/assistants/getCategoryCounts`
+        );
+        setCategories(response.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
     fetchAssistants();
-  }, []);
+    fetchCategories();
+  }, [selectedCategory]);
 
   const generateSlug = (title) => {
     return title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)+/g, "");
+  };
+
+  const truncateText = (text, maxLength) => {
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength) + "...";
   };
 
   if (loading) {
@@ -56,60 +79,54 @@ const AICatalog = () => {
           <p className="text-lg text-blue-600 tracking-wide font-medium">
             Discover powerful AI assistants to enhance your workflow
           </p>
+          <div className="mt-4">
+            <label className="block text-blue-900 text-sm font-medium">
+              Filter by Category:
+            </label>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="mt-2 p-2 border border-blue-300 rounded-lg bg-white"
+            >
+              <option value="">All Categories</option>
+              {categories.map((cat) => (
+                <option key={cat.category} value={cat.category}>
+                  {cat.category} ({cat.count})
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </header>
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-8 [column-fill:_balance] w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {assistants.map((assistant) => (
             <div
               key={assistant._id}
-              className="group relative bg-white/90 backdrop-blur-sm border border-blue-100 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg break-inside-avoid mb-8"
+              className="group flex flex-col bg-white/90 backdrop-blur-sm border border-blue-100 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg h-[500px]"
             >
-              <div className="absolute inset-0 opacity-20">
-                <svg
-                  className="w-full h-full"
-                  viewBox="0 0 100 100"
-                  preserveAspectRatio="none"
-                >
-                  <pattern
-                    id="grid"
-                    width="20"
-                    height="20"
-                    patternUnits="userSpaceOnUse"
-                  >
-                    <path
-                      d="M 20 0 L 0 0 0 20"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="0.2"
-                      className="text-blue-200"
-                    />
-                  </pattern>
-                  <rect width="100" height="100" fill="url(#grid)" />
-                </svg>
-              </div>
-              <div className="aspect-w-16 aspect-h-9 bg-blue-50 overflow-hidden">
+              <div className="h-48 bg-blue-50 overflow-hidden">
                 <img
                   src={assistant.image}
                   alt={assistant.name}
                   className="object-cover w-full h-full transform transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
-              <div className="p-8 relative">
+              <div className="p-6 flex flex-col flex-grow">
                 <div className="flex items-start justify-between mb-4">
-                  <h2 className="text-xl font-light text-blue-900 tracking-tight">
-                    {assistant.name}
+                  <h2 className="text-xl font-light text-blue-900 tracking-tight line-clamp-2">
+                    {truncateText(assistant.name, 50)}
                   </h2>
                   <span className="flex items-center justify-center bg-blue-600 text-white px-4 py-1 rounded-full text-sm tracking-wide shadow-sm ml-4 shrink-0">
                     ${assistant.price}
                   </span>
                 </div>
 
-                <p className="text-blue-600 mb-6 line-clamp-2 tracking-wide text-sm font-medium">
+                <p className="text-blue-600 mb-6 tracking-wide text-sm font-medium line-clamp-4">
                   {assistant.description}
                 </p>
 
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center mt-auto">
                   <div className="flex items-center space-x-2">
                     <span className="text-sm text-blue-400 tracking-wide">
                       By

@@ -8,10 +8,14 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { baseURL } from "./urls";
+import AllAgents from "./sections/AllAgents";
+import { useRouter } from "next/navigation";
 
 const Home = () => {
+  const router = useRouter();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -64,6 +68,7 @@ const Home = () => {
       agents: "10",
     },
   ];
+  console.log(search, "raju");
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-blue-50">
@@ -78,10 +83,14 @@ const Home = () => {
             <div className="flex-1 relative">
               <input
                 type="text"
+                onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search AI agents..."
                 className="text-black w-full px-4 py-3 border border-blue-100 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-blue-100 text-sm"
               />
-              <button className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <button
+                className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                onClick={() => router.push(`/all-agents?search=${search}`)}
+              >
                 <Search className="h-5 w-5 text-blue-400" />
               </button>
             </div>
@@ -91,7 +100,7 @@ const Home = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <MarketStats />
       </div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h2 className="text-2xl font-light text-blue-900 mb-8 tracking-tight">
           Popular Categories
         </h2>
@@ -100,7 +109,8 @@ const Home = () => {
             <CategoryCard key={index} {...category} />
           ))}
         </div>
-      </div>
+      </div> */}
+      <AllAgents />
       <div className="bg-gradient-to-br from-white to-blue-50 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
