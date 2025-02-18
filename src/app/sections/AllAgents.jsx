@@ -86,7 +86,7 @@ const AICatalog = () => {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="mt-2 p-2 border border-blue-300 rounded-lg bg-white"
+              className="mt-2 p-2 border border-blue-300 rounded-lg bg-white text-blue-500"
             >
               <option value="">All Categories</option>
               {categories.map((cat) => (

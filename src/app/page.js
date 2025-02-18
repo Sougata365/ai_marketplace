@@ -10,12 +10,15 @@ import axios from "axios";
 import { baseURL } from "./urls";
 import AllAgents from "./sections/AllAgents";
 import { useRouter } from "next/navigation";
+import VideoPlayer from "./sections/VideoPlayer";
+import EnquiryFormModal from "./components/EnquiryForm";
 
 const Home = () => {
   const router = useRouter();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -100,6 +103,7 @@ const Home = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <MarketStats />
       </div>
+      <VideoPlayer />
       {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h2 className="text-2xl font-light text-blue-900 mb-8 tracking-tight">
           Popular Categories
@@ -137,7 +141,10 @@ const Home = () => {
           Whether you&apos;re building or buying, join our community today.
         </p>
         <div className="flex justify-center space-x-6">
-          <button className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-all shadow-sm hover:shadow-md text-sm tracking-wide">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition-all shadow-sm hover:shadow-md text-sm tracking-wide"
+          >
             Become a Creator
           </button>
           <Link
@@ -148,6 +155,10 @@ const Home = () => {
           </Link>
         </div>
       </div>
+      <EnquiryFormModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };
