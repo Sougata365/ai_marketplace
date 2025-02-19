@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import {
@@ -303,4 +303,12 @@ const AIDetailsPage = () => {
   );
 };
 
-export default AIDetailsPage;
+const page = () => {
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <AIDetailsPage />
+    </Suspense>
+  );
+};
+
+export default page;

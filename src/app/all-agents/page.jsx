@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import axios from "axios";
 import { Calendar, Eye, Search } from "lucide-react";
 import Link from "next/link";
@@ -221,4 +221,12 @@ const AICatalog = () => {
   );
 };
 
-export default AICatalog;
+const page = () => {
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <AICatalog />
+    </Suspense>
+  );
+};
+
+export default page;
